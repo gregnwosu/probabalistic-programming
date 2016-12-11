@@ -1,8 +1,7 @@
 module PlayingCardsExample where
 import Lib
-import qualified Numeric.Probability.Distribution as Dist
+import  Numeric.Probability.Distribution
 import Text.Printf
-
 
 data Suit = Club | Spade | Heart |Diamond
           deriving (Eq, Ord , Show , Enum)

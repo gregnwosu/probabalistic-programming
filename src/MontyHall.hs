@@ -3,60 +3,57 @@ module MontyHall where
 import Data.List ((\\))
 import Lib
 import Text.Printf (printf)
-import qualified Numeric.Probability.Distribution as Dist
-import qualified Numeric.Probability.Distribution ((??), (?=<<))
+import  Numeric.Probability.Distribution hiding (choose)
+
 import Control.Monad
 
 data Outcome = Win | Lose deriving (Ord, Eq, Show)
 --type Trans a  = a -> Dist.T  a
 -- the probability distribution before any doors are opened
-firstChoice' :: (Fractional prob) => Dist.T prob Outcome
-firstChoice' = Dist.uniform [Win, Lose, Lose]
+firstChoice' :: (Fractional prob) => Dist Outcome
+firstChoice' = uniform [Win, Lose, Lose]
 -- this is a transition , it maps a possible outcome to a new distrbutiokn of the same type of outcome
 
-switch' Win  = Dist.certainly Lose
-switch' Lose = Dist.certainly Win
-printDist :: (Show a , Show p) => Dist.T p a -> String
-printDist = (   ("\n\t"++) . show . Dist.decons)
-
-
+switch' Win  = certainly Lose
+switch' Lose = certainly Win
+printDist :: (Show a) => Dist  a -> String
+printDist = ("\n\t"++) . show . decons
 
 data Door = A | B | C deriving (Enum,Eq,Show)
 doors :: [Door]
 doors = [A .. C]
 
 data State = Doors {prize :: Door , chosen :: Door , opened :: Door}
-type Strategy = forall p. (Fractional p) => State -> Dist.T p State
+type Strategy =  State -> Dist  State
 start :: State
 start  = Doors {prize = undefined, chosen = undefined, opened =undefined}
 -- hide the prize
 hide :: Strategy
-hide s = Dist.uniform [s {prize=d}| d <- doors]
+hide s = uniform [s {prize=d}| d <- doors]
 
 choose :: Strategy
-choose s = Dist.uniform [s {chosen=d} | d <- doors]
+choose s = uniform [s {chosen=d} | d <- doors]
 
 open :: Strategy
-open s = Dist.uniform [s {chosen=d} | d <- doors]
+open s = uniform [s {chosen=d} | d <- doors]
 
 switch  :: Strategy
-switch s = Dist.uniform [s{chosen=d} | d <- doors \\ [chosen s,opened s]]
+switch s = uniform [s{chosen=d} | d <- doors \\ [chosen s,opened s]]
 
 stay :: Strategy
-stay = certainlyT   id
+stay = certainlyT id
 
-certainlyT :: (Fractional p ) => (a -> a ) -> a -> Dist.T p a
-certainlyT f = Dist.certainly . f
+certainlyT :: (Fractional p ) => (a -> a ) -> Trans a
+certainlyT f = certainly . f
 
-game :: Fractional p => Strategy -> State -> Dist.T p State
-game s = sequ [hide, choose,open, s]
+game :: Fractional p => Strategy -> Trans State
+game s = sequ [hide, choose, open, s]
 
 result ::  State ->  Outcome
 result s = if (chosen s == prize s) then Win else Lose
 
-eval :: Fractional p => Strategy -> Dist.T p Outcome
+eval :: Fractional p => Strategy -> Dist Outcome
 eval s =  result <$> (game s start)
-
 
 main' = do
   putStrLn "\n outcome for firstChoice:"

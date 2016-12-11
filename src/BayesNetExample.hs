@@ -14,29 +14,29 @@ import qualified Numeric.Probability.Distribution as Dist
 -- c -> e
 -- }
 -- prob A P(A)
-a :: Dist.T Rational Bool
+a :: Dist Bool
 a = prob 0.2
 
-b :: Dist.T Rational Bool
+b :: Dist Bool
 b = prob 0.05
 
-c :: Bool -> Bool -> Dist.T Rational Bool
+c :: Bool -> Trans Bool
 c False False = prob 0.9
 c False True = prob 0.5
 c True False = prob 0.3
 c True True = prob 0.1
 
-d :: Bool -> Dist.T Rational Bool
+d :: Trans Bool
 d False = prob 0.1
 d True = prob 0.4
 
-e :: Bool -> Dist.T Rational Bool
+e :: Trans Bool
 e False = prob 0.5
 e True = prob 0.2
 
 data Network = N {aVal :: Bool , bVal :: Bool, cVal :: Bool, dVal :: Bool, eVal :: Bool} deriving (Eq, Ord , Show)
 
-bNetwork :: Dist.T Rational Network
+bNetwork :: Dist Network
 bNetwork = do a' <- a
               b' <- b
               c' <- c a' b'

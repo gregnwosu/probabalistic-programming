@@ -1,35 +1,39 @@
 {-# LANGUAGE RankNTypes #-}
 module Lib where
 
-import qualified Numeric.Probability.Distribution as Dist
+import  Numeric.Probability.Distribution
 import Control.Monad.Trans.State
 import Control.Monad (replicateM, sequence, (>=>))
 import Data.List (delete)
 import Text.Printf
 
+type Probability = Rational
 -- from  http://web.engr.oregonstate.edu/~erwig/papers/PFP_JFP06.pdf
-type Trans p a = p -> Dist.T p a
+type Dist = T Probability
+type Trans p  = p -> Dist p
 
-prob :: (Num prob ) => Trans prob Bool
-prob p = Dist.choose p True False
-
+removeEach :: (Eq a) => [a] -> [(a, [a])]
 removeEach xs = foldr go [] xs
       where go a = (:) (a, delete a xs)
 -- helper function to select an item from a list for probability measurements
-selectOne :: (Fractional prob, Eq a) => StateT [a] (Dist.T prob) a
-selectOne = StateT $ Dist.uniform . removeEach
+selectOne :: Eq a => StateT [a] Dist a
+selectOne = StateT $ uniform . removeEach
 
-select ::  (Fractional prob, Eq a) => Int -> [a] -> Dist.T prob [a]
+select ::  Eq a => Int -> Trans [a]
 select n = evalStateT $ replicateM n selectOne
 
 toPct :: Double -> String
-toPct = printf "%.2f%%" . (10*)
+toPct = printf "%.2f%%" . (100*)
 
-joinWith :: (Num prob) =>  (a -> b -> c) -> Dist.T prob a -> Dist.T prob b -> Dist.T prob c
-joinWith  f (Dist.Cons d) (Dist.Cons d') = Dist.Cons [ (f x y, p * q) | (x,p) <- d, (y,q) <- d']
+joinWith :: (Num prob) =>  (a -> b -> c) -> Dist a -> Dist b -> Dist c
+joinWith  f (Cons d) (Cons d') =
+    Cons [ (f x y, p * q) | (x,p) <- d, (y,q) <- d']
 
 (>@>) :: Monad m => (a -> m b) -> (b -> m c) -> a -> m c
 f >@> g = (>>= g) . f
 
 sequ :: Monad m => [a -> m a] -> a -> m a
 sequ = foldl (>=>) return
+
+prob :: Rational -> Dist Bool
+prob p = choose p True False
