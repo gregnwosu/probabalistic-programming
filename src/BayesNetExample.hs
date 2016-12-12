@@ -1,9 +1,6 @@
 module BayesNetExample  where
 import Lib
-import qualified Numeric.Probability.Distribution as Dist
-
-
-
+import  Numeric.Probability.Distribution ((??),(?=<<))
 
 -- the following is a representation of the baysian net we will produce with code
 --

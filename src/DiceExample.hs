@@ -11,8 +11,8 @@ dice n = joinWith (:) die (dice (n - 1))
 
 -- What is the probability of at least 2 sixes whe  throwing 4 dies
 puzzle1 :: String
-puzzle1 = toPct . fromRational $((>=2) . length . filter (==6)) ?? dice 4
+puzzle1 = toPct  $((>=2) . length . filter (==6)) ?? dice 4
 -- “What is the probability of drawing a red, green, and blue marble (in this order) from a jar containing two red, two green, and one blue marble without putting them back?”
 data Colours = R | G | B
              deriving (Eq)
-puzzle2 = toPct .  fromRational $ (== [R,G,B]) ?? select 3 [R,R,G,G,B]
+puzzle2 = toPct  $ (== [R,G,B]) ?? select 3 [R,R,G,G,B]

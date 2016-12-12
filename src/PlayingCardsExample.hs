@@ -1,6 +1,6 @@
 module PlayingCardsExample where
 import Lib
-import  Numeric.Probability.Distribution
+import Numeric.Probability.Distribution
 import Text.Printf
 
 data Suit = Club | Spade | Heart |Diamond

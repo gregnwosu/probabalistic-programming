@@ -7,10 +7,10 @@ import Control.Monad (replicateM, sequence, (>=>))
 import Data.List (delete)
 import Text.Printf
 
-type Probability = Rational
+type Probability = Double
 -- from  http://web.engr.oregonstate.edu/~erwig/papers/PFP_JFP06.pdf
 type Dist = T Probability
-type Trans p  = p -> Dist p
+type Trans p = p -> Dist p
 
 removeEach :: (Eq a) => [a] -> [(a, [a])]
 removeEach xs = foldr go [] xs
@@ -35,5 +35,5 @@ f >@> g = (>>= g) . f
 sequ :: Monad m => [a -> m a] -> a -> m a
 sequ = foldl (>=>) return
 
-prob :: Rational -> Dist Bool
+prob :: Double -> Dist Bool
 prob p = choose p True False

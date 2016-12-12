@@ -3,6 +3,8 @@ module Main where
 import Numeric.Probability.Distribution ((??), (?=<<))
 import qualified Numeric.Probability.Distribution as Dist
 import Lib
+import BayesNetExample
+import PlayingCardsExample
 
 main :: IO ()
 main = do
